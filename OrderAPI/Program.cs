@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using OrderAPI.Data;
 using OrderAPI.Services;
-using Rush_OrderMicroservice;
+using OrderAPI;
 
 var builder = WebApplication.CreateBuilder(args);
 
