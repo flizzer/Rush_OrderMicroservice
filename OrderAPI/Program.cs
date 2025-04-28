@@ -17,7 +17,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApiDocument(config =>
 {
     config.DocumentName = "OrderAPI";
-    config.Title = "OrderAPI v1";
+    config.Title = "OrderAPI";
     config.Version = "v1";
 });
 
@@ -34,11 +34,6 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-//app.MapGet("/", () => "Hello World!");
-
 var orders = app.MapGroup("/orders/v1").MapOrdersAPIV1();
-
-// orders.MapGet("/", async (OrderDBContext orderDBContext) => 
-//     await orderDBContext.Orders.ToListAsync());
 
 app.Run();
