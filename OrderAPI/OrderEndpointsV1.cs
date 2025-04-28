@@ -9,6 +9,7 @@ public static class OrderEndpointsV1
     public static RouteGroupBuilder MapOrdersAPIV1(this RouteGroupBuilder orderGroup)
     {
         orderGroup.MapGet("/", GetAllOrders);
+        orderGroup.MapGet("/{orderNumber}", GetOrderByNumber);
         return orderGroup;
     }
 
@@ -16,5 +17,14 @@ public static class OrderEndpointsV1
     {
         var orders = await orderService.GetAllOrders();
         return TypedResults.Ok(orders);
+    }
+
+    public static async Task<Results<Ok<Order>, NotFound>> GetOrderByNumber(string orderNumber
+        , IOrderService orderService)
+    {
+        var order = await orderService.GetOrderByNumber(orderNumber);
+        if (order != null)
+            return TypedResults.Ok(order);
+        return TypedResults.NotFound();
     }
 }

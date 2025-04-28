@@ -8,7 +8,6 @@ namespace OrderUnitTests;
 
 public class OrderEndpointTests
 {
-
     [Fact]
     public async Task OrderEndpointsV1_GetAllOrders_Returns_Orders()
     {
@@ -28,7 +27,7 @@ public class OrderEndpointTests
                 },
                 new Order
                 {
-                   Id = 2,
+                    Id = 2,
                     CustomerId = 50,
                     OrderNumber = "1001",
                     Total = 100.00m,
@@ -63,4 +62,55 @@ public class OrderEndpointTests
         });
     }
 
+    [Fact]
+    public async Task OrderEndpointsV1_GetOrderByNumber_Returns_Order()
+    {
+        //Arrange
+        var createdDate = DateTime.Now;
+        var mock = new Mock<IOrderService>();
+        mock.Setup(mock => mock.GetOrderByNumber(
+            It.Is<string>(orderNumber => orderNumber == "1000")))
+            .ReturnsAsync(
+                new Order {
+                    Id = 2,
+                    CustomerId = 50,
+                    OrderNumber = "1000",
+                    Total = 200.00m,
+                    CreatedDate = createdDate,
+                    Status = OrderStatus.Delivered
+            });
+
+        //Act
+        var result = await OrderEndpointsV1.GetOrderByNumber("1000", mock.Object);
+
+        //Assert
+        Assert.IsType<Results<Ok<Order>, NotFound>>(result);
+        var okResult = (Ok<Order>)result.Result;
+        Assert.NotNull(okResult);
+        Assert.Equal(2, okResult.Value!.Id);
+        Assert.Equal(50, okResult.Value.CustomerId);
+        Assert.Equal("1000", okResult.Value.OrderNumber);
+        Assert.Equal(200.00m, okResult.Value.Total);
+        Assert.Equal(createdDate, okResult.Value.CreatedDate);
+        Assert.Equal(OrderStatus.Delivered, okResult.Value.Status);
+    }
+
+    [Fact]
+    public async Task OrderEndpointsV1_GetOrderByNumber_Returns_NotFound()
+    {
+        //Arrange
+        var createdDate = DateTime.Now;
+        var mock = new Mock<IOrderService>();
+        mock.Setup(mock => mock.GetOrderByNumber(
+            It.Is<string>(orderNumber => orderNumber == "1000")))
+            .ReturnsAsync((Order?)null);
+
+        //Act
+        var result = await OrderEndpointsV1.GetOrderByNumber("1000", mock.Object);
+
+        //Assert
+        Assert.IsType<Results<Ok<Order>, NotFound>>(result);
+        var notFoundResult = (NotFound)result.Result;
+        Assert.NotNull(notFoundResult);
+    }
 }

@@ -15,4 +15,11 @@ public class OrderService : IOrderService
     {
         return await _orderDBContext.Orders.ToListAsync();
     }
+
+    public async Task<Order?> GetOrderByNumber(string orderNumber)
+    {
+        return _orderDBContext.Orders
+            .Where(o => o.OrderNumber == orderNumber)
+            .FirstOrDefault();
+    }
 }
