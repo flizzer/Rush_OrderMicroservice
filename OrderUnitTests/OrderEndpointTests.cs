@@ -113,4 +113,42 @@ public class OrderEndpointTests
         var notFoundResult = (NotFound)result.Result;
         Assert.NotNull(notFoundResult);
     }
+
+    [Fact]
+    public async Task OrderEndpointsV1_CreateOrder_Returns_Created()
+    {
+        //Arrange
+        var actualOrders = new List<Order>();
+        var expectedDateTime = DateTime.Now;
+        var expectedCustomerId = (long)51;
+        var mock = new Mock<IOrderService>();
+        var expectedOrder = new Order
+        {
+            CustomerId = expectedCustomerId,
+            CreatedDate = expectedDateTime,
+            Status = OrderStatus.Pending
+        };
+        mock.Setup(mock => mock.CreateOrder(
+            It.Is<Order>(o => o.CustomerId == expectedOrder.CustomerId
+                && o.CreatedDate == expectedOrder.CreatedDate
+                && o.Status == expectedOrder.Status)))
+            .Callback<Order>(order => actualOrders.Add(order))
+            .Returns(Task.CompletedTask);
+    
+        // Act
+        var result = await OrderEndpointsV1.CreateOrder((long)51
+            , mock.Object);
+    
+        // Assert
+        Assert.IsType<Created<Order>>(result);
+        Assert.NotNull(result);
+        Assert.NotNull(result.Location);
+        Console.WriteLine($"Actual Orders Count: {actualOrders.Count}");
+        Assert.Collection(actualOrders, actualOrder =>
+        {
+            Assert.Equal(expectedCustomerId, actualOrder.CustomerId);
+            Assert.Equal(expectedDateTime, actualOrder.CreatedDate);
+            Assert.Equal(OrderStatus.Pending, actualOrder.Status);
+        });
+    }
 }

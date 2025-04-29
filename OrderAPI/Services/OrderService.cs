@@ -18,8 +18,13 @@ public class OrderService : IOrderService
 
     public async Task<Order?> GetOrderByNumber(string orderNumber)
     {
-        return _orderDBContext.Orders
+        return await _orderDBContext.Orders
             .Where(o => o.OrderNumber == orderNumber)
-            .FirstOrDefault();
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task CreateOrder(Order order)
+    {
+       await _orderDBContext.Orders.AddAsync(order);
     }
 }
