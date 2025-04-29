@@ -39,6 +39,6 @@ public static class OrderEndpointsV1
             Status = OrderStatus.Pending
         };
         await orderService.CreateOrder(newOrder);
-        return TypedResults.Created<Order>("/orders/V1/{newOrder.OrderNumber}", newOrder);
+        return TypedResults.Created<Order>($"/orders/V1/{newOrder.OrderNumber}", newOrder);
     }
 }
