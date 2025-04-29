@@ -26,5 +26,6 @@ public class OrderService : IOrderService
     public async Task CreateOrder(Order order)
     {
        await _orderDBContext.Orders.AddAsync(order);
+       await _orderDBContext.SaveChangesAsync();
     }
 }
